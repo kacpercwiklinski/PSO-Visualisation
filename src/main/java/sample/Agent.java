@@ -39,24 +39,12 @@ class Agent {
     public void update() {
         this.vel.add(acc);
         pos.add(this.vel);
-        vel.limit(5);
+        vel.limit(10);
         acc.mult(0);
     }
 
     private void applyForce(PVector force){
         acc.add(force);
-    }
-
-    @Deprecated   // -------- Nieuzywane
-    public void calculateForce(Point target) {
-        PVector force = new PVector(target.getPos().x - this.pos.x, target.getPos().y - this.pos.y).normalize();
-        this.applyForce(force);
-    }
-
-    @Deprecated //-----Nieuzywane
-    public void calculateForce(Agent target) {
-        PVector force = new PVector(target.getPos().x - this.pos.x, target.getPos().y - this.pos.y).normalize();
-        this.applyForce(force);
     }
 
     private void updateParticle(Agent target,Population p){
@@ -77,16 +65,6 @@ class Agent {
         this.fitness = -this.pos.dist(target.getPos());
 
         this.memory.put(this.fitness,this.pos);
-        
-//         Działający kod @Deprecated
-//        if(this.fitness > p.getPBest().getFitness()){
-//            p.setPBest(this);
-//        }
-//
-//        if(p.getPBest().getFitness() > p.getUtils().getGBest().getFitness()){
-//            p.getUtils().setGBest(this);
-//        }
-//        calculateForce(p.getUtils().getGBest());
 
         Optional<Float> fit = memory.keySet().stream().max((o1, o2) -> o1 > o2 ? 1 : o1 == o2 ? 0 : -1);
         fit.ifPresent(aFloat -> {
