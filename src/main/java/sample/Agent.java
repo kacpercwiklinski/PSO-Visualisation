@@ -6,7 +6,9 @@ import lombok.Data;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 public @Data
@@ -33,6 +35,7 @@ class Agent {
 
     public void show() {
         parent.fill(0, 255, 0);
+        parent.strokeWeight(1);
         parent.ellipse(this.pos.x, this.pos.y, 8, 8);
     }
 
@@ -61,8 +64,25 @@ class Agent {
     }
 
 
-    public void calculateFitness(Point target,Population p){
-        this.fitness = -this.pos.dist(target.getPos());
+    public void calculateFitness(List<Point> points, Population p){
+        Point highestClosest;
+
+        highestClosest = points.stream().max((o1, o2) -> o1.getHeight() > o2.getHeight()? 1 : -1).get();
+
+        float currentHeight = 0;
+
+        for (Point point : points){
+            if(this.pos.dist(point.getPos()) < 128){
+                currentHeight = point.getHeight() / this.pos.dist(point.getPos());
+            }else{
+                currentHeight = 0;
+            }
+        }
+
+        this.fitness = currentHeight - this.pos.dist(highestClosest.getPos());
+//        System.out.println(this.fitness);
+
+//        this.fitness = -this.pos.dist(highestClosest.getPos());
 
         this.memory.put(this.fitness,this.pos);
 
@@ -81,9 +101,11 @@ class Agent {
             p.getUtils().setGBest(this.pBest);
         }
 
-        if(this.pos.dist(target.getPos()) <= 8){
+        if(this.pos.dist(highestClosest.getPos()) <= 8){
             p.getUtils().setGoalReached(true);
         }
+
+
         updateParticle(p.getUtils().getGBest(),p);
 
         memory.clear();
