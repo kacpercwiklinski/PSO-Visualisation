@@ -36,13 +36,13 @@ class Agent {
     public void show() {
         parent.fill(0, 255, 0);
         parent.strokeWeight(1);
-        parent.ellipse(this.pos.x, this.pos.y, 8, 8);
+        parent.ellipse(this.pos.x, this.pos.y, 4, 4);
     }
 
     public void update() {
         this.vel.add(acc);
         pos.add(this.vel);
-        vel.limit(10);
+        vel.limit(5);
         acc.mult(0);
     }
 
@@ -64,25 +64,22 @@ class Agent {
     }
 
 
-    public void calculateFitness(List<Point> points, Population p){
-        Point highestClosest;
-
-        highestClosest = points.stream().max((o1, o2) -> o1.getHeight() > o2.getHeight()? 1 : -1).get();
+    public void calculateFitness(List<Box> points, Population p){
 
         float currentHeight = 0;
+        Box highest = points.stream().max((o1, o2) -> o1.getHeight() > o2.getHeight()? 1 : -1).get();
 
-        for (Point point : points){
-            if(this.pos.dist(point.getPos()) < 128){
-                currentHeight = point.getHeight() / this.pos.dist(point.getPos());
-            }else{
-                currentHeight = 0;
+
+        for (Box point : points){
+            if(this.pos.dist(point.getPos()) < point.getScale()/2){
+                currentHeight = point.getHeight();
             }
         }
 
-        this.fitness = currentHeight - this.pos.dist(highestClosest.getPos());
-//        System.out.println(this.fitness);
+        this.fitness = currentHeight;
 
-//        this.fitness = -this.pos.dist(highestClosest.getPos());
+        System.out.println("Aktualna wysokosc: " + currentHeight);
+
 
         this.memory.put(this.fitness,this.pos);
 
@@ -101,7 +98,7 @@ class Agent {
             p.getUtils().setGBest(this.pBest);
         }
 
-        if(this.pos.dist(highestClosest.getPos()) <= 8){
+        if(this.pos.dist(highest.getPos()) <= 4){
             p.getUtils().setGoalReached(true);
         }
 

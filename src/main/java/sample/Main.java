@@ -9,15 +9,23 @@ import java.util.Random;
 
 public class Main extends PApplet {
 
-    Boolean wIterations = true;  //------ Wybór wersji
+    Boolean wIterations = false;  //------ Wybór wersji
     final int MAX_IT = 100;              //------ Maksymalna ilosc iteracji
-    final int N_POP = 100;                //------ Ilosc czasteczek w populacji
+    final int N_POP = 2000;                //------ Ilosc czasteczek w populacji
     final int NUM_OF_POINTS = 10;
+
     final int MAX_HEIGHT = 1000;
+    int cols = 1200;
+    int rows = 600;
+    int scale = 10;
 
 
     public Point point;
     public List<Point> points = new ArrayList<>();
+
+    public List<Box> boxes = new ArrayList<>();
+
+    public float[][] heights = new float[1200/scale][600/scale];
     
     
     
@@ -33,24 +41,32 @@ public class Main extends PApplet {
     }
 
     public void settings() {
-        size(1366, 720);
+        size(1200, 600);
 //        fullScreen();
     }
 
     public void setup() {
-        frameRate(30);
+//        frameRate(1);
         background(51);
-
-        for(int i = 0; i < NUM_OF_POINTS ; i++){
-            Point p = new Point(this, ((int) random(128,width-128)), ((int) random(128,height-128)),random(MAX_HEIGHT));
-            points.add(p);
+        float yoff=0;
+        for (int x = 0 ; x < cols/scale ; x++){
+            float xoff=0;
+            for (int y = 0 ; y < rows/scale;y++){
+                heights[x][y] = noise(xoff,yoff);
+                boxes.add(new Box(this,x,y,map(heights[x][y],0,1,-300,1000),scale));
+                xoff+=0.5f;
+            }
+            yoff+=0.5f;
         }
-        
+
+        drawMap();
         initializeSwarm();
     }
 
     public void draw() {
         background(51);
+        drawMap();
+        System.out.println("Najwyzszy: " + boxes.parallelStream().max((o1, o2) -> o1.getHeight() > o2.getHeight() ? 1 : -1));
         points.forEach(Point::show);
         population.drawPopulation();
 
@@ -63,10 +79,10 @@ public class Main extends PApplet {
         if (mousePressed) {
             if (wIterations) {
                 initializeSwarm();
-            }else{
-                randomizeHeights();
-
             }
+//            else{
+//                randomizeHeights();
+//            }
         }
 
         if(mousePressed && (mouseButton == RIGHT)){
@@ -75,10 +91,12 @@ public class Main extends PApplet {
 
     }
 
+    private void drawMap(){
+        boxes.forEach(Box::show);
+    }
+
     private void randomizeHeights(){
-        points.forEach(point1 -> {
-            point1.setHeight(random(MAX_HEIGHT));
-        });
+//        boxes.forEach();
     }
 
     private void randomizePositions(){
@@ -99,7 +117,7 @@ public class Main extends PApplet {
     private void PSO() {
         population.updatePopulation();
         population.getPopulation().parallelStream().forEach(agent -> {
-            agent.calculateFitness(points, population);
+            agent.calculateFitness(boxes, population);
         });
     }
 
@@ -113,7 +131,7 @@ public class Main extends PApplet {
                 temp = false;
             } else {
                 population.getPopulation().forEach(agent -> {
-                    agent.calculateFitness(points, population);
+                    agent.calculateFitness(boxes, population);
                 });
 
             }
