@@ -6,7 +6,6 @@ import lombok.*;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -45,8 +44,6 @@ class Agent {
         this.fitness = agent.fitness;
     }
 
-    public Agent(){}
-
     public void show() {
         int size ;
         if(isWinner){
@@ -72,13 +69,13 @@ class Agent {
     }
 
     private void updateParticle(Population p){
-        float c1 = 2f,c2 = 2f;
+        float c1 = 2.05f,c2 = 2f;
         float k = 1f;
 
         float o = c1 + c2;
 
 //        float w = ((float) ((2 * k) / (Math.abs(2 - o - Math.sqrt(Math.pow(o, 2) - (4 * o))))));
-            float w = 1f;
+            float w = 1.2f;
 
         PVector t1 = this.vel.mult(w);
         PVector t2 = new PVector(this.pBest.getPos().x - this.getPos().x,this.pBest.getPos().y-this.getPos().y).mult(c1* p.getP().random(0,1));
@@ -107,7 +104,7 @@ class Agent {
             this.memory.put(this.fitness,this.pos);
         }
 
-        Optional<Float> fit = memory.keySet().stream().max((o1, o2) -> o1 > o2 ? 1 : o1 == o2 ? 0 : -1);
+        Optional<Float> fit = memory.keySet().stream().max((o1, o2) -> o1 > o2 ? 1 : o1.equals(o2) ? 0 : -1);
 
         fit.ifPresent(aFloat -> {
             this.pBest.setFitness(aFloat);

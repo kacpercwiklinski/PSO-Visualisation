@@ -1,9 +1,6 @@
 package sample;
 
 import processing.core.PApplet;
-import processing.core.PVector;
-import processing.opengl.PGraphicsOpenGL;
-import processing.opengl.PJOGL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,28 +8,29 @@ import java.util.Random;
 
 public class Main extends PApplet {
 
-    Boolean wIterations = true;  //------ Wybór wersji
-    final int MAX_IT = 2000;              //------ Maksymalna ilosc iteracji
-    final int N_POP = 50;                //------ Ilosc czasteczek w populacji
+    private final Boolean wIterations = true;         //------ Wybór wersji
+    private final int MAX_IT = 2000;              //------ Maksymalna ilosc iteracji
+    private final int N_POP = 100;                //------ Ilosc czasteczek w populacji
+    private final int FRAMERATE = 60;
 
 
-    int cols = 1200;
-    int rows = 600;
-    int scale = 20;
-    Box highest;
+    private final int cols = 1200;
+    private final int rows = 600;
+    private final int scale = 20;
+    private float yoff = 0;
+    private Box highest;
 
 
-    public List<Box> boxes = new ArrayList<>();
+    private final List<Box> boxes = new ArrayList<>();
 
-    public float[][] heights = new float[1200/scale][600/scale];
-    
-    
-    
-    boolean temp = true;
-    int i = 0;
-    Population population;
-    Utils utils = new Utils(false);
-    Random r = new Random();
+    private final float[][] heights = new float[1200 / scale][600 / scale];
+
+
+    private boolean temp = true;
+    private int i = 0;
+    private Population population;
+    private final Utils utils = new Utils(false);
+    private final Random r = new Random();
 
 
     public static void main(String[] args) {
@@ -44,30 +42,14 @@ public class Main extends PApplet {
     }
 
     public void setup() {
-//        frameRate(5);
+        frameRate(FRAMERATE);
         background(51);
-        float yoff=0;
-        for (int x = 0 ; x < cols/scale ; x++){
-            float xoff=0;
-            for (int y = 0 ; y < rows/scale;y++){
-                heights[x][y] = noise(xoff,yoff);
-                boxes.add(new Box(this,x,y,map(heights[x][y],0,1,-300,1000),scale));
-                xoff+=0.05f;
-            }
-            yoff+=0.05f;
-        }
-
-        highest = boxes.parallelStream().max((o1, o2) -> o1.getHeight() > o2.getHeight() ? 1 : -1).get();
-        drawMap();
+        randomizeMap();
         initializeSwarm();
     }
 
     public void draw() {
-        if(i% 5 == 0){
-            System.out.println(utils.getGBest().getFitness());
-        }
         checkGoal();
-
         background(51);
         drawMap();
         population.drawPopulation();
@@ -79,27 +61,39 @@ public class Main extends PApplet {
         }
 
         if (mousePressed) {
-            if (wIterations) {
+            if (wIterations && (mouseButton == LEFT)) {
                 initializeSwarm();
             }
+            if (mouseButton == RIGHT) {
+                randomizeMap();
+            }
         }
-
-        if(mousePressed && (mouseButton == RIGHT)){
-            //Losowanko mapy
-        }
-
     }
 
-    private void drawMap(){
+    private void randomizeMap() {
+        boxes.clear();
+        for (int x = 0; x < cols / scale; x++) {
+            float xoff = 0;
+            for (int y = 0; y < rows / scale; y++) {
+                heights[x][y] = noise(xoff, yoff);
+                boxes.add(new Box(this, x, y, map(heights[x][y], 0, 1, -300, 1000), scale));
+                xoff += 0.05f;
+            }
+            yoff += 0.05f;
+        }
+        highest = boxes.parallelStream().max((o1, o2) -> o1.getHeight() > o2.getHeight() ? 1 : o1.equals(o2)? 0 : -1).get();
+        drawMap();
+    }
+
+    private void drawMap() {
         boxes.forEach(Box::show);
     }
 
-    private void checkGoal(){
-        if(utils.getGBest().getFitness() == highest.getHeight()){
+    private void checkGoal() {
+        if (utils.getGBest().getFitness() == highest.getHeight()) {
             utils.setGoalReached(true);
         }
     }
-
 
     private void initializeSwarm() {
         population = new Population(this, N_POP, utils);
@@ -111,12 +105,10 @@ public class Main extends PApplet {
 
     private void PSO() {
         population.updatePopulation();
-        population.getPopulation().parallelStream().forEach(agent -> {
-            agent.calculateFitness(boxes, population);
-        });
+        population.getPopulation().parallelStream().forEach(agent -> agent.calculateFitness(boxes, population));
     }
 
-    private void PSOwIterations() {
+    private void PSOwIterations (){
         if (population != null && i < MAX_IT) {
             population.updatePopulation();
             if (utils.getGoalReached()) {
@@ -125,14 +117,11 @@ public class Main extends PApplet {
                 System.out.println("Najwyzsze miejsce :" + utils.getGBest().getFitness());
                 System.out.println("Najwyzszy box :" + highest.getHeight());
 
-
                 utils.setGoalReached(true);
-                i = MAX_IT +1;
+                i = MAX_IT + 1;
                 temp = false;
             } else {
-                population.getPopulation().forEach(agent -> {
-                    agent.calculateFitness(boxes, population);
-                });
+                population.getPopulation().forEach(agent -> agent.calculateFitness(boxes, population));
 
             }
             i++;

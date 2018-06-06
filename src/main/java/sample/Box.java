@@ -22,7 +22,7 @@ public class Box {
 
 
     public void show(){
-        float r = p.map(height,0,1000,50,255);
+        float r = PApplet.map(height,0,1000,50,255);
         p.fill(r,0,0);
         p.noStroke();
         p.rect(this.pos.x-scale/2,this.pos.y-scale/2,scale,scale);
