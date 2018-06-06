@@ -18,7 +18,7 @@ public class Main extends PApplet {
 
     int cols = 1200;
     int rows = 600;
-    int scale = 10;
+    int scale = 20;
     Box highest;
 
 
@@ -67,8 +67,6 @@ public class Main extends PApplet {
             System.out.println(utils.getGBest().getFitness());
         }
         checkGoal();
-//        System.out.println("Gbest :" + utils.getGBest().getFitness());
-//        System.out.println("Najwyzszy: " + highest.getHeight());
 
         background(51);
         drawMap();
@@ -84,9 +82,6 @@ public class Main extends PApplet {
             if (wIterations) {
                 initializeSwarm();
             }
-//            else{
-//                randomizeHeights();
-//            }
         }
 
         if(mousePressed && (mouseButton == RIGHT)){
@@ -97,10 +92,6 @@ public class Main extends PApplet {
 
     private void drawMap(){
         boxes.forEach(Box::show);
-    }
-
-    private void randomizeHeights(){
-//        boxes.forEach();
     }
 
     private void checkGoal(){
@@ -116,7 +107,6 @@ public class Main extends PApplet {
         utils.setGoalReached(false);
         i = 0;
         temp = true;
-        randomizeHeights();
     }
 
     private void PSO() {

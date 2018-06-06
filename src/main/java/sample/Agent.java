@@ -83,7 +83,7 @@ class Agent {
         PVector t1 = this.vel.mult(w);
         PVector t2 = new PVector(this.pBest.getPos().x - this.getPos().x,this.pBest.getPos().y-this.getPos().y).mult(c1* p.getP().random(0,1));
         PVector t3 = new PVector(p.getUtils().getGBest().getPos().x - this.getPos().x,p.getUtils().getGBest().getPos().y-this.getPos().y).mult(c2* p.getP().random(0,1));
-        PVector vel = t1.add(t2).add(t3).mult(w);
+        PVector vel = t1.add(t2).add(t3);
 
         this.pos.add(vel);
     }
