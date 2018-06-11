@@ -10,7 +10,7 @@ public class Main extends PApplet {
 
     private final Boolean wIterations = true;         //------ Wybór wersji
     private final int MAX_IT = 2000;              //------ Maksymalna ilosc iteracji
-    private final int N_POP = 100;                //------ Ilosc czasteczek w populacji
+    private final int N_POP = 200;                //------ Ilosc czasteczek w populacji
     private final int FRAMERATE = 60;
 
 
@@ -77,9 +77,9 @@ public class Main extends PApplet {
             for (int y = 0; y < rows / scale; y++) {
                 heights[x][y] = noise(xoff, yoff);
                 boxes.add(new Box(this, x, y, map(heights[x][y], 0, 1, -300, 1000), scale));
-                xoff += 0.05f;
+                xoff += 0.07f;
             }
-            yoff += 0.05f;
+            yoff += 0.07f;
         }
         highest = boxes.parallelStream().max((o1, o2) -> o1.getHeight() > o2.getHeight() ? 1 : o1.equals(o2)? 0 : -1).get();
         drawMap();
