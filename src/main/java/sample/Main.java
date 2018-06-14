@@ -14,7 +14,7 @@ public class Main extends PApplet {
 
     private List<Point> points = new ArrayList();
 
-    private int FITNESS_FUNCTION = 3; //    1 --- Sphere Function   ,  2 --- Booth function , 3 --- Himmelblau's function
+    private int FITNESS_FUNCTION = 1; //    1 --- Sphere Function   ,  2 --- Booth function , 3 --- Himmelblau's function
     private final int MAX_IT = 2000;              //------ Maksymalna ilosc iteracji
     private final int N_POP = 100;                //------ Ilosc czasteczek w populacji
 
