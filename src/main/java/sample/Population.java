@@ -23,7 +23,7 @@ class Population {
         this.p = p;
         this.utils = utils;
 
-        IntStream.range(0,quantity).forEach(value -> population.add(new Agent(p,value,p.random(p.width),p.random(p.height))));
+        IntStream.range(0,quantity).forEach(value -> population.add(new Agent(p,value,p.random(-500,500),p.random(-500,500),p.random(0,100),1.2f)));
 
     }
 
